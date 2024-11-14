@@ -1,0 +1,65 @@
+http://localhost/GroupProject/login.php
+
+For Testing to this first:
+
+Step 1: Create the Database
+
+CREATE DATABASE water_america_project;
+USE water_america_project;
+
+
+Step 2: Create the Necessary Tables
+
+1. Users Table
+This table stores user credentials and other necessary details for login.
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+2. Billing Information Table (wa_bill)
+Stores billing information linked to each user.
+
+CREATE TABLE wa_bill (
+    user_id INT PRIMARY KEY,
+    billing_address VARCHAR(255) NOT NULL,
+    city VARCHAR(100),
+    state VARCHAR(50),
+    zip_code VARCHAR(10),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+3. Move Requests Table
+Stores information about user move requests.
+
+CREATE TABLE move_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    billing_address VARCHAR(255),
+    move_date DATE,
+    status ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+
+Step 3: Sample Data Insertion
+You can add some sample data for testing purposes:
+
+Insert a sample user for testing:
+
+INSERT INTO users (username, password, email)
+VALUES ('testuser', '123', 'testuser@wateramerica.com');
+
+INSERT INTO users (username, password, email)
+VALUES ('user2', '222', 'user2@hotmail.com');
+
+Insert sample billing information for the user:
+
+INSERT INTO wa_bill (user_id, billing_address, city, state, zip_code)
+VALUES (1, '123 Copper St', 'Camden', 'NJ', '08102');
+
