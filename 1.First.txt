@@ -46,6 +46,15 @@ CREATE TABLE move_requests (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+4. Email Logs Table
+CREATE TABLE email_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    email VARCHAR(255),
+    subject VARCHAR(255),
+    status VARCHAR(50),
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 Step 3: Sample Data Insertion
 You can add some sample data for testing purposes:
@@ -63,3 +72,15 @@ Insert sample billing information for the user:
 INSERT INTO wa_bill (user_id, billing_address, city, state, zip_code)
 VALUES (1, '123 Copper St', 'Camden', 'NJ', '08102');
 
+
+Step 4: Test Email Sending
+
+Install Composer
+https://getcomposer.org/download/
+
+Navigate to your project directory:
+cd C:\wamp64\www\project\GroupProject
+
+Run the following command to install PHPMailer
+composer require phpmailer/phpmailer
+This command will create a vendor folder in your project directory and download PHPMailer and its dependencies.
