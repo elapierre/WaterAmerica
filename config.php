@@ -1,5 +1,7 @@
 <?php
+$wamove_api_url = 'http://localhost:8080/project/GroupProject/mock_api.php'; // Path to mock API
 
+// Database configuration
 $host = 'localhost'; // Database host
 $dbname = 'water_america_project'; // Database name (change if testing)
 $username = 'root'; // Database username
