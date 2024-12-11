@@ -14,7 +14,6 @@ if (!isset($_SESSION['user_id'])) {
 
     <!-- Inline CSS for styling the dashboard page -->
     <style>
-        
         * {
             box-sizing: border-box;
             margin: 0;
@@ -50,13 +49,15 @@ if (!isset($_SESSION['user_id'])) {
             margin-bottom: 30px;
         }
 
-        .dashboard-container .button-container {
+        .button-container {
             display: flex;
+            flex-direction: column;
             gap: 15px;
             justify-content: center;
         }
 
         .dashboard-button {
+            display: inline-block;
             padding: 10px 20px;
             background-color: #007bff;
             color: #fff;
@@ -87,15 +88,18 @@ if (!isset($_SESSION['user_id'])) {
 
     <!-- Main welcome heading for the dashboard -->
     <h1>Welcome to Your Dashboard</h1>
-     
+
     <!-- Description for the user -->
     <p>Manage your account and move requests below.</p>
-    <div class="button-container">
 
-	<!-- Link button to create a new move request -->
+    <div class="button-container">
+        <!-- Link button to create a new move request -->
         <a href="move_request.php" class="dashboard-button">Create New Move Request</a>
 
-	<!-- Link button to log out of the dashboard -->
+        <!-- Link button to view move requests -->
+        <a href="move_history.php" class="dashboard-button">View Move Requests</a>
+
+        <!-- Link button to log out of the dashboard -->
         <a href="logout.php" class="dashboard-button logout-button">Logout</a>
     </div>
 
