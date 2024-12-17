@@ -7,7 +7,6 @@ Step 1: Create the Database
 CREATE DATABASE water_america_project;
 USE water_america_project;
 
-
 Step 2: Create the Necessary Tables
 
 1. Users Table
@@ -18,6 +17,8 @@ CREATE TABLE users (
     username VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
+    phone_number VARCHAR(15) DEFAULT NULL,
+    role VARCHAR(20) DEFAULT 'user',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -41,7 +42,7 @@ CREATE TABLE move_requests (
     user_id INT NOT NULL,
     billing_address VARCHAR(255),
     move_date DATE,
-    status ENUM('pending', 'completed', 'canceled') DEFAULT 'pending',
+    status ENUM('pending', 'completed', 'canceled', 'failed') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -56,21 +57,41 @@ CREATE TABLE email_logs (
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+5. Admin_Actions
+
+CREATE TABLE admin_actions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    admin_id INT,
+    action_type VARCHAR(100),
+    move_request_id INT,
+    status VARCHAR(20),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (move_request_id) REFERENCES move_requests(id) ON DELETE CASCADE
+);
+
 Step 3: Sample Data Insertion
 You can add some sample data for testing purposes:
 
 Insert a sample user for testing:
 
-INSERT INTO users (username, password, email)
-VALUES ('testuser', '123', 'testuser@wateramerica.com');
+INSERT INTO users (username, password, email, phone_number)
+VALUES ('testuser', '123', 'testuser@wateramerica.com', '1234567890');
 
-INSERT INTO users (username, password, email)
-VALUES ('user2', '222', 'user2@hotmail.com');
+INSERT INTO users (username, password, email, phone_number)
+VALUES ('user2', '222', 'user2@hotmail.com', '2345678901');
+
+INSERT INTO users (username, password, email, phone_number, role)
+VALUES ('admin', '123', 'admin@hotmail.com', '1234567890', 'admin');
 
 Insert sample billing information for the user:
 
 INSERT INTO wa_bill (user_id, billing_address, city, state, zip_code)
 VALUES (1, '123 Copper St', 'Camden', 'NJ', '08102');
+
+Insert sample move requests information for testing:
+INSERT INTO move_requests (user_id, billing_address, move_date, status, created_at)
+VALUES (3, '555 Cooper St, Camden, NJ, 08105', '2024-12-20', 'failed', NOW());
 
 
 Step 4: Test Email Sending
