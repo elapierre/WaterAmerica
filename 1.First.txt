@@ -41,7 +41,7 @@ CREATE TABLE move_requests (
     user_id INT NOT NULL,
     billing_address VARCHAR(255),
     move_date DATE,
-    status ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
+    status ENUM('pending', 'completed', 'canceled') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
