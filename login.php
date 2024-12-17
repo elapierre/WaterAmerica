@@ -7,36 +7,37 @@ require 'config.php'; // Include database configuration
 $error = null; // Initialize the error variable to store potential error messages
 
 try {
-
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') 
-    {
-	// Retrieve username and password entered by the user
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        // Retrieve username and password entered by the user
         $username = $_POST['username'];
         $password = $_POST['password'];
 
         // Prepare and execute the query to check user credentials
         $query = $pdo->prepare('SELECT * FROM users WHERE username = ? AND password = ?');
-	
-	// Execute the query with the provided username and password as parameters
+        
+        // Execute the query with the provided username and password as parameters
         $query->execute([$username, $password]);
-        $user = $query->fetch();
+        $user = $query->fetch(PDO::FETCH_ASSOC);
 
-        if ($user) 
-	{
+        if ($user) {
             // User authenticated successfully
             $_SESSION['user_id'] = $user['id'];
-	    
-	    // Redirect the authenticated user to the dashboard page
-            header('Location: dashboard.php');
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['user_role'] = $user['role']; // Store the user's role in the session
+
+            // Redirect based on the user's role
+            if ($user['role'] === 'admin') {
+                header('Location: admin_dashboard.php'); // Redirect admin to the admin dashboard
+            } else {
+                header('Location: dashboard.php'); // Redirect regular users to the user dashboard
+            }
             exit(); // Always exit after header redirection
-        } 
-	else {
+        } else {
             // Authentication failed
             $error = "Invalid username or password.";
         }
     }
-} catch (PDOException $e) 
-{
+} catch (PDOException $e) {
     // Handle database connection error
     $error = "Service error: Unable to connect to the authentication service. Please try again later.";
 }
@@ -46,10 +47,10 @@ try {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - WaterAmerica</title>
     <style>
-        
-        *{
+        * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
@@ -62,6 +63,7 @@ try {
             justify-content: center;
             height: 100vh;
             background-color: #f0f4f8;
+            margin: 0;
         }
 
         .login-container {
