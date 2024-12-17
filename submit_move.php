@@ -9,8 +9,7 @@ use PHPMailer\PHPMailer\Exception;
 $mail = new PHPMailer(true);
 
 // Check if the form is submitted via POST
-if ($_SERVER['REQUEST_METHOD'] == 'POST') 
-{
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_id = $_SESSION['user_id'] ?? null;
     $billing_address = $_POST['billing_address'];
     $city = $_POST['city'];
@@ -29,7 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     }
 
     try {
-
         // Check if the user already has billing information
         $check_query = $pdo->prepare('SELECT * FROM wa_bill WHERE user_id = ?');
         $check_query->execute([$user_id]);
@@ -122,9 +120,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 
             $mail->send();
             echo "<p class='success'>✅ Confirmation email sent successfully!</p>";
+
+            // Insert email log into email_logs table
+            $log_query = $pdo->prepare(
+                'INSERT INTO email_logs (user_id, email, subject, status) VALUES (?, ?, ?, ?)'
+            );
+            $log_query->execute([$user_id, $recipient_email, $mail->Subject, 'sent']);
         } catch (Exception $emailError) {
             error_log("Email sending failed for user ID: $user_id. Error: " . $emailError->getMessage());
             echo "<p class='error'>❌ Email service unavailable. Please try again later.</p>";
+
+            // Log email failure
+            $log_query = $pdo->prepare(
+                'INSERT INTO email_logs (user_id, email, subject, status) VALUES (?, ?, ?, ?)'
+            );
+            $log_query->execute([$user_id, $recipient_email, 'Move Request Confirmation', 'failed']);
         }
 
     } catch (Exception $e) {
