@@ -32,7 +32,7 @@ try {
             background-color: #f0f4f8;
             text-align: center;
             margin: 0;
-            padding: 20px;
+            padding: 150px;
         }
         table {
             width: 80%;
