@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 require 'config.php'; // Include database configuration
 
@@ -12,22 +11,24 @@ if (!isset($_SESSION['user_id'])) {
 // Set a default error message variable
 $error_message = null;
 
-try 
-{
-    // Attempt to retrieve the user's billing address from WA-BILL
+try {
+    // Attempt to retrieve the user's billing address and phone number from the database
     $user_id = $_SESSION['user_id'];
     $query = $pdo->prepare('SELECT billing_address, city, state, zip_code FROM wa_bill WHERE user_id = ?');
     $query->execute([$user_id]);
     $billing_info = $query->fetch(PDO::FETCH_ASSOC);
 
+    // Fetch the user's phone number
+    $phone_query = $pdo->prepare('SELECT phone_number FROM users WHERE id = ?');
+    $phone_query->execute([$user_id]);
+    $user = $phone_query->fetch(PDO::FETCH_ASSOC);
+    $phone_number = $user['phone_number'] ?? '';
+    
     // Check if billing info is available
-    if (!$billing_info) 
-    {
+    if (!$billing_info) {
         $error_message = "Billing information unavailable. Please enter your address manually.";
     }
-}
-catch (PDOException $e) 
-{
+} catch (PDOException $e) {
     // Display error message
     $error_message = "Service error: Unable to retrieve billing information. Please enter your address manually.";
 }
@@ -39,9 +40,7 @@ catch (PDOException $e)
     <meta charset="UTF-8">
     <title>Move Request - WaterAmerica</title>
 
-
     <style>
-
         * {
             box-sizing: border-box;
             margin: 0;
@@ -92,12 +91,17 @@ catch (PDOException $e)
         }
 
         .form-container input[type="text"],
-        .form-container input[type="date"] {
+        .form-container input[type="date"],
+        .form-container input[type="tel"] {
             padding: 10px;
             border-radius: 5px;
             border: 1px solid #ddd;
             font-size: 16px;
             width: 100%;
+        }
+
+        .form-container .sms-section {
+            margin-top: 15px;
         }
 
         .form-container button {
@@ -129,28 +133,41 @@ catch (PDOException $e)
         .form-container .back-link a:hover {
             text-decoration: underline;
         }
+
+        #phone_number {
+            display: none;
+        }
     </style>
 
     <script>
-
-        // Restrict move date to future dates
-        function setMinDate() 
-	{
+        // Function to restrict move date to future dates
+        function setMinDate() {
             const today = new Date();
             const day = String(today.getDate()).padStart(2, '0');
-            const month = String(today.getMonth() + 1).padStart(2, '0'); // January is 0
+            const month = String(today.getMonth() + 1).padStart(2, '0');
             const year = today.getFullYear();
             const minDate = `${year}-${month}-${day}`;
             document.getElementById("move_date").setAttribute("min", minDate);
         }
 
-        window.onload = setMinDate; // Set min date on page load
+        // Function to show/hide the phone number input based on checkbox
+        function togglePhoneNumberInput() {
+            const smsCheckbox = document.getElementById("send_sms");
+            const phoneNumberInput = document.getElementById("phone_number");
+
+            if (smsCheckbox.checked) {
+                phoneNumberInput.style.display = "block";
+            } else {
+                phoneNumberInput.style.display = "none";
+            }
+        }
+
+        window.onload = setMinDate;
     </script>
 </head>
 <body>
 
 <div class="form-container">
-
     <h2>Move Request Form</h2>
 
     <?php if ($error_message): ?>
@@ -176,6 +193,15 @@ catch (PDOException $e)
 
         <label for="move_date">Move Date:</label>
         <input type="date" id="move_date" name="move_date" required>
+
+        <div class="sms-section">
+            <label for="send_sms">
+                <input type="checkbox" id="send_sms" name="send_sms" onchange="togglePhoneNumberInput()"> Send Move Info via SMS
+            </label>
+
+            <input type="tel" id="phone_number" name="phone_number" placeholder="Confirm your phone number" 
+                   value="<?php echo htmlspecialchars($phone_number); ?>">
+        </div>
 
         <button type="submit">Submit Move Request</button>
     </form>
