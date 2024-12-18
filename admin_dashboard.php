@@ -34,7 +34,7 @@ try {
 
         body {
             background-color: #f0f4f8;
-            padding: 20px;
+            padding: 150px;
             text-align: center;
         }
 
@@ -63,6 +63,7 @@ try {
             background-color: #007bff;
             color: white;
             text-transform: uppercase;
+            font-size: 15px;
         }
 
         table td {
