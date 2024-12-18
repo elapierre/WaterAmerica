@@ -1,7 +1,7 @@
 <?php
+require_once 'apiKeys.php';
 function validate_address($address){
-
-    $apiKey = "";
+    $apiKey = API_KEY;
     $apiUrl = "https://addressvalidation.googleapis.com/v1:validateAddress?key=$apiKey";
 
     $data = [

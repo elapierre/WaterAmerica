@@ -1,13 +1,14 @@
 <?php
 require 'vendor/autoload.php'; // Include the Twilio SDK
+require 'apiKeys.php';
 use Twilio\Rest\Client;
 
 function sendMessage($phoneNumber, $billing_address, $city, $state, $zip_code, $move_date) {
     try {
         // Twilio credentials
-        $account_sid = '';
-        $auth_token = '';
-        $twilio_phone_number = '';
+        $account_sid = ACCOUNT_SID;
+        $auth_token = AUTH_TOKEN;
+        $twilio_phone_number = TWILIO_PHONE_NUMBER;
 
         // Create a Twilio client
         $client = new Client($account_sid, $auth_token);

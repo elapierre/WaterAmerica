@@ -19,7 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $zip_code = $_POST['zip_code'];
     $move_date = $_POST['move_date'];
     $phone_number = $_POST['phone_number'];
-    $send_sms['send_sms'] = isset($_POST['send_sms']);
+    $send_sms = isset($_POST['send_sms']);
+
 
     $address = [
         'line1' => $billing_address,
