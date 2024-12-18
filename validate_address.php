@@ -1,7 +1,7 @@
 <?php
 function validate_address($address){
 
-    $apiKey = "AIzaSyCcB5zmHwefOE3F0mOeo_kAs4OOV3bUa1k";
+    $apiKey = "";
     $apiUrl = "https://addressvalidation.googleapis.com/v1:validateAddress?key=$apiKey";
 
     $data = [
