@@ -2,6 +2,7 @@
 session_start();
 require 'config.php';
 require 'vendor/autoload.php'; // Include PHPMailer library
+require_once'validate_address.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -17,7 +18,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $zip_code = $_POST['zip_code'];
     $move_date = $_POST['move_date'];
 
-    $full_address = "$billing_address, $city, $state, $zip_code";
+    $address = [
+        'line1' => $billing_address,
+        'line2' => "$city, $state $zip_code",
+        'region_code' => "US",
+    ];
+
+    $standardizedAddress = validate_address($address);
+
+
+    $full_address = $standardizedAddress['address'] . ', ' .
+        $standardizedAddress['city'] . ', ' .
+        $standardizedAddress['state'] . ' ' .
+        $standardizedAddress['zipCode'];
 
     // Check if the move date is in the future
     $current_date = date('Y-m-d');

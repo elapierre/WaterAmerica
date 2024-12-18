@@ -4,7 +4,8 @@ session_start(); // Start the session to manage user login sessions
 
 require 'config.php'; // Include database configuration
 
-$error = null; // Initialize the error variable to store potential error messages
+// Initialize error variable
+$error = null;
 
 try {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -14,7 +15,7 @@ try {
 
         // Prepare and execute the query to check user credentials
         $query = $pdo->prepare('SELECT * FROM users WHERE username = ? AND password = ?');
-        
+
         // Execute the query with the provided username and password as parameters
         $query->execute([$username, $password]);
         $user = $query->fetch(PDO::FETCH_ASSOC);
@@ -33,13 +34,17 @@ try {
             }
             exit(); // Always exit after header redirection
         } else {
-            // Authentication failed
-            $error = "Invalid username or password.";
+            // Authentication failed, set error message in session
+            $_SESSION['error'] = "Invalid username or password.";
+            header('Location: login.php'); // Redirect back to login page
+            exit();
         }
     }
 } catch (PDOException $e) {
     // Handle database connection error
-    $error = "Service error: Unable to connect to the authentication service. Please try again later.";
+    $_SESSION['error'] = "Service error: Unable to connect to the authentication service. Please try again later.";
+    header('Location: login.php'); // Redirect back to login page
+    exit();
 }
 ?>
 
@@ -48,122 +53,57 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - WaterAmerica</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f0f4f8;
-            margin: 0;
-        }
-
-        .login-container {
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            padding: 40px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .login-container h2 {
-            margin-bottom: 20px;
-            color: #333;
-            font-size: 24px;
-        }
-
-        .login-container form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            text-align: left;
-        }
-
-        .login-container label {
-            font-weight: bold;
-            color: #333;
-        }
-
-        .login-container input[type="text"],
-        .login-container input[type="password"] {
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-        }
-
-        .login-container button {
-            padding: 10px;
-            background-color: #007bff;
-            color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s ease;
-        }
-
-        .login-container button:hover {
-            background-color: #0056b3;
-        }
-
-        .error-message {
-            color: red;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-
-        .login-container p {
-            font-size: 14px;
-            color: #666;
-            margin-top: 10px;
-        }
-
-        .reset-link a {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        .reset-link a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <title>Water America Move Service - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-cover bg-center bg-fixed" style="background-image: url('https://images.unsplash.com/photo-1535868268694-c4fec652390e?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8d2F0ZXIlMjBkcm9wbGV0fGVufDB8fDB8fHww'); min-height: 100vh;">
 
-<div class="login-container">
+<!-- Navbar -->
+<nav class="bg-blue-600 bg-opacity-75 p-4 fixed top-0 left-0 w-full flex justify-between items-center z-50">
+    <div class="text-white text-2xl font-bold">Water America Move Service</div>
+</nav>
 
-    <h2>Login to WaterAmerica</h2>
+<!-- Stacked Welcome Message -->
+<div class="absolute top-28 left-8 text-blue-200 text-5xl font-roboto font-bold italic z-40">
+    <div>Login with</div>
+    <div>your Username</div>
+    <div>and Password</div>
+</div>
 
-    <!-- Login form, POST method to send data securely -->
-    <form action="login.php" method="POST">
+<!-- Login Box (Centered) -->
+<div class="flex justify-center items-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-96 z-50">
+        <h2 class="text-2xl font-semibold text-center mb-6">Login</h2>
 
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" placeholder="Enter your username" required>
+        <!-- Display error message if exists -->
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="bg-red-500 text-white text-center p-2 mb-4 rounded-md">
+                <?php echo $_SESSION['error']; ?>
+            </div>
+            <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        <form action="login.php" method="POST">
+            <!-- Username Field -->
+            <div class="mb-4">
+                <label for="username" class="block text-gray-700">Username</label>
+                <input type="text" id="username" name="username" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+            </div>
 
-        <button type="submit">Login</button>  <!-- Submit button to log in -->
-    </form>
-     
-    <!-- Display error message if login fails -->
-    <?php if ($error): ?>
-        <p class="error-message"><?php echo $error; ?></p>
-    <?php endif; ?>
+            <!-- Password Field -->
+            <div class="mb-6">
+                <label for="password" class="block text-gray-700">Password</label>
+                <input type="password" id="password" name="password" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+            </div>
 
-    <!-- Link to reset password if user forgot it -->
-    <p class="reset-link"><a href="reset_password.php">Forgot Password?</a></p>
+            <!-- Login Button -->
+            <div class="flex justify-center">
+                <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    Login
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 </body>

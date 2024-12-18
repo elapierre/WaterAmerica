@@ -1,108 +1,52 @@
 <?php
 session_start();
+// Redirect to login if the user is not logged in
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header("Location: login.php");
     exit();
 }
+
+$username = $_SESSION['username']; // Retrieve the username from the session
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard - WaterAmerica</title>
-
-    <!-- Inline CSS for styling the dashboard page -->
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f0f4f8;
-        }
-
-        .dashboard-container {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            padding: 30px;
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .dashboard-container h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .dashboard-container p {
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        .button-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            justify-content: center;
-        }
-
-        .dashboard-button {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: background 0.3s ease;
-        }
-
-        .dashboard-button:hover {
-            background-color: #0056b3;
-        }
-
-        .logout-button {
-            background-color: #dc3545;
-        }
-
-        .logout-button:hover {
-            background-color: #c82333;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Water America Move Service</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-cover bg-center bg-fixed" style="background-image: url('https://images.pexels.com/photos/5321497/pexels-photo-5321497.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');">
 
-<div class="dashboard-container">
+<!-- Navbar -->
+<nav class="bg-blue-600 bg-opacity-75 p-4 fixed top-0 left-0 w-full flex justify-between items-center z-50">
+    <div class="text-white text-2xl font-bold">Water America Move Service</div>
+    <a href="logout.php" class="bg-red-500 text-white px-4 py-2 rounded-md">
+        Logout
+    </a>
+</nav>
 
-    <!-- Main welcome heading for the dashboard -->
-    <h1>Welcome to Your Dashboard</h1>
+<!-- Welcome Message -->
+<div class="absolute top-28 left-8 text-blue-600 text-5xl font-roboto font-bold italic z-40">
+    <div>Welcome, <?php echo htmlspecialchars($username); ?>!</div>
+</div>
 
-    <!-- Description for the user -->
-    <p>Manage your account and move requests below.</p>
+<!-- Dashboard Buttons -->
+<div class="flex justify-center items-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-96 z-50">
+        <h2 class="text-2xl font-semibold text-center mb-6">Your Dashboard</h2>
 
-    <div class="button-container">
-        <!-- Link button to create a new move request -->
-        <a href="move_request.php" class="dashboard-button">Create New Move Request</a>
-
-        <!-- Link button to view move requests -->
-        <a href="move_history.php" class="dashboard-button">View Move Requests</a>
-
-        <!-- Link button to log out of the dashboard -->
-        <a href="logout.php" class="dashboard-button logout-button">Logout</a>
+        <!-- Buttons -->
+        <div class="flex flex-col space-y-4">
+            <a href="move_request.php" class="bg-blue-500 text-white px-6 py-2 rounded-md text-center hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                Request Move
+            </a>
+            <a href="move_history.php" class="bg-blue-500 text-white px-6 py-2 rounded-md text-center hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                View Move Requests
+            </a>
+        </div>
     </div>
-
 </div>
 
 </body>
