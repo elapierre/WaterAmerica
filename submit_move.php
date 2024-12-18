@@ -3,6 +3,7 @@ session_start();
 require 'config.php';
 require 'vendor/autoload.php'; // Include PHPMailer library
 require_once'validate_address.php';
+require_once 'sendMessage.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -17,6 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $state = $_POST['state'];
     $zip_code = $_POST['zip_code'];
     $move_date = $_POST['move_date'];
+    $phone_number = $_POST['phone_number'];
+    $send_sms['send_sms'] = isset($_POST['send_sms']);
 
     $address = [
         'line1' => $billing_address,
@@ -26,11 +29,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $standardizedAddress = validate_address($address);
 
-
     $full_address = $standardizedAddress['address'] . ', ' .
         $standardizedAddress['city'] . ', ' .
         $standardizedAddress['state'] . ' ' .
         $standardizedAddress['zipCode'];
+
+
+    if ($send_sms && !empty($phone_number)) {
+        // Call the sendMessage function
+        $sms_status = sendMessage($phone_number, $billing_address, $city, $state, $zip_code, $move_date);
+        echo $sms_status;
+    }
 
     // Check if the move date is in the future
     $current_date = date('Y-m-d');

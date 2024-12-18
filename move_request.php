@@ -23,7 +23,7 @@ try {
     $phone_query->execute([$user_id]);
     $user = $phone_query->fetch(PDO::FETCH_ASSOC);
     $phone_number = $user['phone_number'] ?? '';
-    
+
     // Check if billing info is available
     if (!$billing_info) {
         $error_message = "Billing information unavailable. Please enter your address manually.";
@@ -176,19 +176,19 @@ try {
 
     <form action="submit_move.php" method="POST">
         <label for="billing_address">Billing Address:</label>
-        <input type="text" id="billing_address" name="billing_address" 
+        <input type="text" id="billing_address" name="billing_address"
                value="<?php echo $billing_info ? htmlspecialchars($billing_info['billing_address']) : ''; ?>" required>
 
         <label for="city">City:</label>
-        <input type="text" id="city" name="city" 
+        <input type="text" id="city" name="city"
                value="<?php echo $billing_info ? htmlspecialchars($billing_info['city']) : ''; ?>" required>
 
         <label for="state">State:</label>
-        <input type="text" id="state" name="state" 
+        <input type="text" id="state" name="state"
                value="<?php echo $billing_info ? htmlspecialchars($billing_info['state']) : ''; ?>" required>
 
         <label for="zip_code">Zip Code:</label>
-        <input type="text" id="zip_code" name="zip_code" 
+        <input type="text" id="zip_code" name="zip_code"
                value="<?php echo $billing_info ? htmlspecialchars($billing_info['zip_code']) : ''; ?>" required>
 
         <label for="move_date">Move Date:</label>
@@ -198,11 +198,9 @@ try {
             <label for="send_sms">
                 <input type="checkbox" id="send_sms" name="send_sms" onchange="togglePhoneNumberInput()"> Send Move Info via SMS
             </label>
-
-            <input type="tel" id="phone_number" name="phone_number" placeholder="Confirm your phone number" 
+            <input type="tel" id="phone_number" name="phone_number" placeholder="Confirm your phone number"
                    value="<?php echo htmlspecialchars($phone_number); ?>">
         </div>
-
         <button type="submit">Submit Move Request</button>
     </form>
 
