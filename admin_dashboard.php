@@ -1,21 +1,12 @@
 <?php
 session_start();
-require 'config.php';
-
-// Check if the user is an admin
-if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
-    echo "<p style='color: red;'>❌ Access denied. Admin privileges are required.</p>";
+// Redirect to login if the user is not logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
     exit();
 }
 
-// Fetch all move requests
-try {
-    $query = $pdo->query('SELECT * FROM move_requests');
-    $move_requests = $query->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    echo "<p style='color: red;'>Error fetching move requests: " . htmlspecialchars($e->getMessage()) . "</p>";
-    exit();
-}
+$username = $_SESSION['username']; // Retrieve the username from the session
 ?>
 
 <!DOCTYPE html>
@@ -23,141 +14,44 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Move Requests</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            background-color: #f0f4f8;
-            padding: 150px;
-            text-align: center;
-        }
-
-        h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        table {
-            width: 70%;
-            border-collapse: collapse;
-            margin: 20px auto;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        table th, table td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: center;
-        }
-
-        table th {
-            background-color: #007bff;
-            color: white;
-            text-transform: uppercase;
-            font-size: 15px;
-        }
-
-        table td {
-            color: #333;
-        }
-
-        .error {
-            color: red;
-        }
-
-        .button {
-            display: inline-block;
-            padding: 8px 12px;
-            background-color: #28a745;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        .button:hover {
-            background-color: #218838;
-        }
-
-        .disabled-button {
-            display: inline-block;
-            padding: 8px 12px;
-            background-color: #ccc;
-            color: #fff;
-            border-radius: 5px;
-            font-size: 14px;
-            cursor: not-allowed;
-        }
-
-        .logout-button {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #dc3545;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        .logout-button:hover {
-            background-color: #c82333;
-        }
-    </style>
+    <title>Dashboard - Water America Move Service</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-cover bg-center bg-fixed" style="background-image: url('https://images.pexels.com/photos/5321497/pexels-photo-5321497.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');">
 
-<h2>Admin Dashboard - Move Requests</h2>
+<!-- Navbar -->
+<nav class="bg-blue-600 bg-opacity-75 p-4 fixed top-0 left-0 w-full flex justify-between items-center z-50">
+    <div class="text-white text-2xl font-bold">Water America Move Service</div>
+    <a href="logout.php" class="bg-red-500 text-white px-4 py-2 rounded-md">
+        Logout
+    </a>
+</nav>
 
-<table>
-    <tr>
-        <th>ID</th>
-        <th>User ID</th>
-        <th>Billing Address</th>
-        <th>Move Date</th>
-        <th>Status</th>
-        <th>Error Message</th>
-        <th>Resubmission Attempts</th>
-        <th>Actions</th>
-    </tr>
+<!-- Welcome Message -->
+<div class="absolute top-28 left-8 text-blue-600 text-5xl font-roboto font-bold italic z-40">
+    <div>Welcome, <?php echo htmlspecialchars($username); ?>!</div>
+</div>
 
-    <?php if (empty($move_requests)): ?>
-        <tr>
-            <td colspan="8">No move requests found.</td>
-        </tr>
-    <?php else: ?>
-        <?php foreach ($move_requests as $request): ?>
-            <tr>
-                <td><?php echo $request['id']; ?></td>
-                <td><?php echo $request['user_id']; ?></td>
-                <td><?php echo htmlspecialchars($request['billing_address']); ?></td>
-                <td><?php echo htmlspecialchars($request['move_date']); ?></td>
-                <td><?php echo htmlspecialchars($request['status']); ?></td>
-                <td class="error"><?php echo htmlspecialchars($request['error_message'] ?? ''); ?></td>
-                <td><?php echo $request['resubmission_attempts']; ?></td>
-                <td>
-                    <?php if ($request['status'] === 'failed'): ?>
-                        <a href="resubmit_move.php?id=<?php echo $request['id']; ?>" class="button">Resubmit</a>
-                    <?php else: ?>
-                        <span class="disabled-button">N/A</span>
-                    <?php endif; ?>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    <?php endif; ?>
-</table>
+<!-- Dashboard Buttons -->
+<div class="flex justify-center items-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-96 z-50">
+        <h2 class="text-2xl font-semibold text-center mb-6">Your Dashboard</h2>
 
-<!-- Logout Button -->
-<a href="logout.php" class="logout-button">Logout</a>
+        <!-- Buttons -->
+        <div class="flex flex-col space-y-4">
+            <a href="move_request.php" class="bg-blue-500 text-white px-6 py-2 rounded-md text-center hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                Request Move
+            </a>
+            <a href="move_history.php" class="bg-blue-500 text-white px-6 py-2 rounded-md text-center hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                View Move Requests
+            </a>
+	    <a href="view_all_requests.php" class="bg-blue-500 text-white px-6 py-2 rounded-md text-center hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                View All Move Requests
+            </a>
+		
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
