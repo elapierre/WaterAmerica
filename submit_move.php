@@ -101,13 +101,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $mail->isSMTP();
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
-            $mail->Username = 'Escarlettcabrera03@gmail.com'; // Your Gmail address
-            $mail->Password = 'cwusdgvyjczfgrbo';             // Your Gmail App Password
+            $mail->Username = 'wateramerica6@gmail.com';  // Your Gmail address
+            $mail->Password = 'wpyzaoakuholjfrg';         // Your Gmail App Password
             $mail->SMTPSecure = 'tls';
             $mail->Port = 587;
 
             // Email settings
-            $mail->setFrom('Escarlettcabrera03@gmail.com', 'WaterAmerica');
+            $mail->setFrom('wateramerica6@gmail.com', 'WaterAmerica');
             $mail->addAddress($recipient_email);
             $mail->isHTML(true);
             $mail->Subject = 'Move Request Confirmation';
